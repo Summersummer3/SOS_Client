@@ -48,6 +48,8 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
     private String result;
     
     private Thread t1 = new Thread(){
+/*    	1.所有的socket操作/读写 都运行在该线程中。
+    	2。之后将使用mina实现推送功能，该socket仅为学习测试*/
     	
     	public void run() {
 
@@ -79,7 +81,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
     };
     
     
-    public void loginResult() {
+    public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
 			  try {
 					if(result.equals("1")){
 					  Intent intent = new Intent();
