@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	private volatile BufferedWriter out;
     private String user_name;
     private String pass_word;
+    private String result;
     
     private Thread t1 = new Thread(){
     	
@@ -57,6 +58,12 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
     			
     			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    			result = in.readLine();
+    			while(!result.equals("1")){
+    				result = in.readLine();
+    			}
+    			
+    			
     		} catch (UnknownHostException e1) {
     			MainActivity.this.ShowDialog("login exception" + e1.getMessage());
     			e1.printStackTrace();
@@ -71,12 +78,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
     	
     };
     
-    private Thread t2 = new Thread(){
-		
-
-    	public void run() {
+    
+    public void loginResult() {
 			  try {
-					if(in.readLine().equals("1")){
+					if(result.equals("1")){
 					  Intent intent = new Intent();
 					  intent.setClass(MainActivity.this, Table1.class);
 					  Bundle bd = new Bundle();
@@ -90,16 +95,15 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 					  MainActivity.this.socket.close();//后面一个参数是requestcode。
 					  }
 					else{
-						MainActivity.this.ShowDialog("username or password wrong!");
+					  MainActivity.this.ShowDialog("username or password wrong!");
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					}
-		  	
+    }
 			
-		};
-	  		};
+		
 	
     
 	protected void onCreate(Bundle savedInstanceState){
@@ -125,8 +129,8 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			
 			
 			public void onClick(View arg0) {
-			  String user_name = et1.getText().toString();
-		      String pass_word = et2.getText().toString();
+			  user_name = et1.getText().toString();
+		      pass_word = et2.getText().toString();
 		      
 		      et1.setFocusable(true);
 		      et2.setFocusable(true);
@@ -148,12 +152,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 						json.put("pass_word", pass_word);
 						out.write(json.toString()+"\n");
 						out.flush();
-						MainActivity.this.t2.start();
+						Thread.sleep(1000);
+						loginResult();
 						
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
