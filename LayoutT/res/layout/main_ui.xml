@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+	<ImageButton
+            android:layout_gravity="center"
+            android:id="@+id/imageButton1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/phone" 
+
+			android:layout_marginTop="70dp"
+			android:layout_marginBottom="30dp"/>
+	
+		<!-- 		android:background="@drawable/phone" -->
+
+    
+
+    
+
+    <ImageButton
+        	android:layout_gravity="center"
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/phone1" 
+            android:layout_marginBottom="30dp"/>
+
+    
+
+    
+
+    <ImageButton
+        	android:layout_gravity="center"
+            android:id="@+id/imageButton3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mail" 
+            android:layout_marginBottom="30dp"/>
+
+    
+
+</LinearLayout>

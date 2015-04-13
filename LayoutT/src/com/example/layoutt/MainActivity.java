@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	private Button bt;
 	private EditText et1,et2;
 	private final int PORT = 8888;
-	private final String IP = "192.168.1.106";
+	private final String IP = "192.168.23.1";
 	private volatile Socket socket;
 	private volatile BufferedReader in;
 	private volatile BufferedWriter out;
@@ -85,12 +85,12 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			  try {
 					if(result.equals("1")){
 					  Intent intent = new Intent();
-					  intent.setClass(MainActivity.this, Table1.class);
-					  Bundle bd = new Bundle();
-					  bd.putString("user_name", user_name);
-					  bd.putString("pass_word", pass_word);
-					  
-					  intent.putExtras(bd);
+					  intent.setClass(MainActivity.this, Main_UI.class);
+//					  Bundle bd = new Bundle();
+//					  bd.putString("user_name", user_name);
+//					  bd.putString("pass_word", pass_word);
+//					  
+//					  intent.putExtras(bd);
 					  startActivityForResult(intent,0);
 					  MainActivity.this.in.close();
 					  MainActivity.this.out.close();
