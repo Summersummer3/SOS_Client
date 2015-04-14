@@ -14,9 +14,12 @@ import java.net.UnknownHostException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.tencent.android.tpush.XGPushManager;
+import com.tencent.android.tpush.service.XGPushService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,10 +42,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	private Button bt;
 	private EditText et1,et2;
 	private final int PORT = 8888;
-	private final String IP = "192.168.23.1";
-	private volatile Socket socket;
-	private volatile BufferedReader in;
-	private volatile BufferedWriter out;
+	private final String IP = "192.168.1.106";
+	private volatile Socket socket = null;
+	private volatile BufferedReader in = null;
+	private volatile BufferedWriter out = null;
     private String user_name;
     private String pass_word;
     private String result;
@@ -111,6 +114,12 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		Context context =  getApplicationContext();
+		XGPushManager.registerPush(context);
+		Intent service = new Intent(context, XGPushService.class);
+		context.startService(service);
+		
 		
 		t1.start();
 		
@@ -217,4 +226,21 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	    }
 
 
+
+
+	@Override
+	protected void onDestroy() {
+		try {
+			socket.shutdownInput();
+			socket.shutdownOutput();
+			socket.close();
+			in.close();
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	   
 }
