@@ -41,71 +41,33 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	
 	private Button bt;
 	private EditText et1,et2;
-	private final int PORT = 8888;
-	private final String IP = "192.168.1.106";
-	private volatile Socket socket = null;
-	private volatile BufferedReader in = null;
-	private volatile BufferedWriter out = null;
-    private String user_name;
+	
+	private String user_name;
     private String pass_word;
-    private String result;
+    public volatile static String result = "";
     
-    private Thread t1 = new Thread(){
-/*    	1.所有的socket操作/读写 都运行在该线程中。
-    	2。之后将使用mina实现推送功能，该socket仅为学习测试*/
-    	
-    	public void run() {
 
-    		try {
-    			socket = new Socket();
-    			SocketAddress socketAddress = new InetSocketAddress(IP,PORT);
-    			socket.connect(socketAddress,8000);
-    			
-    			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-    			result = in.readLine();
-    			while(!result.equals("1")){
-    				result = in.readLine();
-    			}
-    			
-    			
-    		} catch (UnknownHostException e1) {
-    			MainActivity.this.ShowDialog("login exception" + e1.getMessage());
-    			e1.printStackTrace();
-    		} catch (IOException e1) {
-    			// TODO Auto-generated catch block
-    			e1.printStackTrace();
-    			MainActivity.this.ShowDialog("login exception" + e1.getMessage());
-    		}
-    		
-    		
-    	};
-    	
-    };
-    
     
     public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
-			  try {
-					if(result.equals("1")){
-					  Intent intent = new Intent();
-					  intent.setClass(MainActivity.this, Main_UI.class);
+			  if(result.equals("1")){
+			  Intent intent = new Intent();
+			  intent.setClass(MainActivity.this, Main_UI.class);
+			  startActivity(intent);
+			  finish();  //finish the activity 
+			  
 //					  Bundle bd = new Bundle();
 //					  bd.putString("user_name", user_name);
 //					  bd.putString("pass_word", pass_word);
 //					  
 //					  intent.putExtras(bd);
-					  startActivityForResult(intent,0);
-					  MainActivity.this.in.close();
-					  MainActivity.this.out.close();
-					  MainActivity.this.socket.close();//后面一个参数是requestcode。
-					  }
-					else{
-					  MainActivity.this.ShowDialog("username or password wrong!");
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					}
+//					  startActivityForResult(intent,0);
+//					  MainActivity.this.in.close();
+//					  MainActivity.this.out.close();
+//					  MainActivity.this.socket.close();//后面一个参数是requestcode。
+			  }
+			else{
+			  MainActivity.this.ShowDialog("username or password wrong!");
+			}
     }
 			
 		
@@ -120,8 +82,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		Intent service = new Intent(context, XGPushService.class);
 		context.startService(service);
 		
+		Intent serviceIntent = new Intent();
+		serviceIntent.setClass(this, Socket_Service.class);
+		startService(serviceIntent);
 		
-		t1.start();
 		
 		bt = (Button) findViewById(R.id.button1);
 		
@@ -156,14 +120,21 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		      }
 		      
 		      else{
+		    	    
+		    	    
 		    	  	JSONObject json = new JSONObject();
 		    	 
 					try {
+						
 						json.put("user_name", user_name);
 						json.put("pass_word", pass_word);
-						out.write(json.toString()+"\n");
-						out.flush();
+						Socket_Service.out.write("0\n");
+						Socket_Service.out.flush();
 						Thread.sleep(1000);
+						Socket_Service.out.write(json.toString()+"\n");
+						Socket_Service.out.flush();
+						Thread.sleep(1000);
+						Log.v("test",result);
 						loginResult();
 						
 					} catch (Exception e) {
@@ -178,6 +149,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 
 
 	}
+	
 	
 	@Override
 	public void onFocusChange(View v, boolean hasFocus) {
@@ -228,19 +200,19 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 
 
 
-	@Override
-	protected void onDestroy() {
-		try {
-			socket.shutdownInput();
-			socket.shutdownOutput();
-			socket.close();
-			in.close();
-			out.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	@Override
+//	protected void onDestroy() {
+//		try {
+//			socket.shutdownInput();
+//			socket.shutdownOutput();
+//			socket.close();
+//			in.close();
+//			out.close();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	   
 }
