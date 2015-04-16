@@ -1,6 +1,12 @@
 package com.example.layoutt;
 
+import java.io.IOException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xml.sax.Locator;
+
+import com.gc.materialdesign.widgets.Dialog;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Main_UI extends Activity implements LocationListener{
 	
@@ -26,7 +33,7 @@ public class Main_UI extends Activity implements LocationListener{
 	private TextView tv;
 	private LocationManager mLocationManager;
 	private Location location;
-	private String loc;
+	private JSONObject loc;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +49,14 @@ public class Main_UI extends Activity implements LocationListener{
 		ib1 = (ImageButton) findViewById(R.id.imageButton1);
 		ib2 = (ImageButton) findViewById(R.id.imageButton2);
 		ib3 = (ImageButton) findViewById(R.id.imageButton3);
-		tv = (TextView) findViewById(R.id.textView_GPSLoc);
+		
 		
 		
 		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		loc = changeLoc(location);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
 		
-		while(location==null){
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
-		}
 				
 		
 		ib1.setOnClickListener(new OnClickListener() {
@@ -79,7 +84,28 @@ public class Main_UI extends Activity implements LocationListener{
 			@Override
 			public void onClick(View arg0) {
 				Log.i("gps", "点击按钮");
-				tv.setText(loc);
+				if(loc==null){
+					Dialog dialog = new Dialog(Main_UI.this, "定位出错！", "定位尚未成功 ,请稍等！");
+					dialog.show();
+					dialog.getButtonAccept().setText("等待定位");
+					dialog.getButtonCancel().setText("");
+					
+				}
+				else{
+					try {
+						Socket_Service.out.write("1\n");
+						Socket_Service.out.flush();
+						Thread.sleep(1000);
+						Socket_Service.out.write(loc.toString()+"\n");
+						Socket_Service.out.flush();
+						Toast.makeText(Main_UI.this, "位置信息发送成功", 0).show();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+				
 				
 			}
 		});
@@ -87,7 +113,10 @@ public class Main_UI extends Activity implements LocationListener{
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
+		while(loc==null)
+		{
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
+		}
 	}
 	
 	@Override
@@ -96,9 +125,18 @@ public class Main_UI extends Activity implements LocationListener{
 		mLocationManager.removeUpdates(this);
 	}
 	
-	private String changeLoc(Location location) {
+	private JSONObject changeLoc(Location location) {
+		JSONObject json = new JSONObject();
 		if(location!=null){
-			return location.getLatitude()+"  "+location.getLongitude();
+			try {
+				json.put("Latitude", location.getLatitude());
+				json.put("Longitude", location.getLongitude());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return json;
 		}
 		else{
 			return null;

@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		
 		Intent serviceIntent = new Intent();
 		serviceIntent.setClass(this, Socket_Service.class);
-		startService(serviceIntent);
+		context.startService(serviceIntent);
 		
 		
 		bt = (Button) findViewById(R.id.button1);
@@ -169,20 +169,20 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		switch(resultCode){
-		case RESULT_OK:
-			Bundle bundle = data.getExtras();
-			et1.setText(bundle.getString("user_name"));
-			et2.setText(bundle.getString("pass_word"));
-			break;
-		default:
-			break;
-		
-		}
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		
+//		switch(resultCode){
+//		case RESULT_OK:
+//			Bundle bundle = data.getExtras();
+//			et1.setText(bundle.getString("user_name"));
+//			et2.setText(bundle.getString("pass_word"));
+//			break;
+//		default:
+//			break;
+//		
+//		}
+//	}
 
 	
 	   public void ShowDialog(String msg) {

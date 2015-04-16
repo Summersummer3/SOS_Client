@@ -17,7 +17,7 @@ import android.util.Log;
 public class Socket_Service extends Service {
 
 	private final int PORT = 8888;
-	private final String IP = "192.168.23.1";
+	private final String IP = "192.168.1.106";
 	volatile static Socket socket = null;   //该socket需要写成静态参数供多条线程同时调用
 	private final String TAG = "Socket Service";
 	public volatile static BufferedReader in;
