@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/textView_registerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="29dp"
+        android:text="账号：" />
+
+    <EditText
+        android:id="@+id/editText__registerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView_registerName"
+        android:layout_marginLeft="17dp"
+        android:layout_toRightOf="@+id/textView_registerName"
+        android:ems="10" >
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView_registerPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_registerName"
+        android:layout_below="@+id/textView_registerName"
+        android:layout_marginTop="22dp"
+        android:text="密码：" />
+
+    <EditText
+        android:id="@+id/editText_registerPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView_registerPassword"
+        android:layout_alignLeft="@+id/editText__registerName"
+        android:ems="10"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/textView_registerCommitPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView_registerPassword"
+        android:layout_marginTop="22dp"
+        android:layout_toLeftOf="@+id/editText_registerPassword"
+        android:text="确认密码：" />
+
+    <EditText
+        android:id="@+id/editText_registerCommitPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView_registerCommitPassword"
+        android:layout_alignLeft="@+id/editText_registerPassword"
+        android:ems="10"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/textView_registerProSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_registerCommitPassword"
+        android:layout_below="@+id/textView_registerCommitPassword"
+        android:layout_marginTop="22dp"
+        android:text="请选择常驻省市（含直辖市及自治区）" />
+
+    <Spinner
+        android:id="@+id/spinner_registerProSelect"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView_registerProSelect" />
+
+    <Spinner
+        android:id="@+id/spinner_registerCitySelect"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinner_registerProSelect" />
+
+    <TextView
+        android:id="@+id/textView_registerPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_registerProSelect"
+        android:layout_below="@+id/spinner_registerCitySelect"
+        android:layout_marginTop="22dp"
+        android:text="请输入预设求救电话" />
+
+    <EditText
+        android:id="@+id/editText_registerPhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_registerPhoneNumber"
+        android:layout_alignRight="@+id/editText__registerName"
+        android:layout_below="@+id/textView_registerPhoneNumber"
+        android:ems="10"
+        android:inputType="phone" />
+
+    <com.gc.materialdesign.views.ButtonFlat
+        android:id="@+id/button_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText_registerPhoneNumber"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="注册" />
+
+</RelativeLayout>
