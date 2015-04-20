@@ -43,6 +43,13 @@
             android:contentDescription="短信求救"
             android:layout_marginBottom="30dp"/>
 
-
+    <com.gc.materialdesign.views.ButtonFlat
+        android:layout_gravity="center"
+       	android:layout_marginTop="50dp"
+        android:id="@+id/button_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="退出登录" 
+        />
 
 </LinearLayout>

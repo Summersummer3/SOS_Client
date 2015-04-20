@@ -6,11 +6,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.Locator;
 
+import com.gc.materialdesign.views.ButtonFlat;
 import com.gc.materialdesign.widgets.Dialog;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,10 +32,13 @@ public class Main_UI extends Activity implements LocationListener{
 	
 	
 	private ImageButton ib1,ib2,ib3;
+	private ButtonFlat bf1;
 	private TextView tv;
 	private LocationManager mLocationManager;
 	private Location location;
 	private JSONObject loc;
+	private String PREFS_NAME = "com.example.layoutt";
+	private String username,tel;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +54,20 @@ public class Main_UI extends Activity implements LocationListener{
 		ib1 = (ImageButton) findViewById(R.id.imageButton1);
 		ib2 = (ImageButton) findViewById(R.id.imageButton2);
 		ib3 = (ImageButton) findViewById(R.id.imageButton3);
+		bf1 = (ButtonFlat) findViewById(R.id.button_logout);
 		
+		Intent intent = getIntent();
+		username = intent.getStringExtra("username");
+		SharedPreferences setting = getSharedPreferences(PREFS_NAME, 0);
+		tel = setting.getString("Telephone" + username, "");
 		
-		
-		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		loc = changeLoc(location);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
-		
-				
 		
 		ib1.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				
-				Intent dial = new Intent("android.intent.action.CALL",Uri.parse("tel:"+"110"));
+				Intent dial = new Intent("android.intent.action.CALL",Uri.parse("tel:"+110));
 				startActivity(dial);
 				
 			}
@@ -74,7 +77,8 @@ public class Main_UI extends Activity implements LocationListener{
 			
 			@Override
 			public void onClick(View arg0) {
-				Intent dial = new Intent("android.intent.action.CALL",Uri.parse("tel:"+"15243611674"));
+				Log.v("tel", tel);
+				Intent dial = new Intent("android.intent.action.CALL",Uri.parse("tel:"+tel));
 				startActivity(dial);
 			}
 		});
@@ -109,6 +113,43 @@ public class Main_UI extends Activity implements LocationListener{
 				
 			}
 		});
+		
+		bf1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				SharedPreferences setting = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+				SharedPreferences.Editor editor = setting.edit();
+				editor.putBoolean("Logined", false);
+				editor.commit();
+				try {
+					
+					Socket_Service.out.write("bye\n");
+					Socket_Service.out.flush();
+					Socket_Service.isConnect = false;
+
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				Intent intent =new Intent();
+				intent.setClass(Main_UI.this, MainActivity.class);
+				startActivity(intent);
+				
+			}
+		});
+		
+		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		loc = changeLoc(location);
+		
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
+		
+		Log.v("Error","here!!");		
+		
+		
 	}
 	@Override
 	protected void onResume() {

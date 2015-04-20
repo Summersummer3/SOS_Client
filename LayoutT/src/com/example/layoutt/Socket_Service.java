@@ -16,12 +16,13 @@ import android.util.Log;
 
 public class Socket_Service extends Service {
 
-	private final int PORT = 8888;
+	private final int PORT = 8000;
 	private final String IP = "192.168.1.106";
 	volatile static Socket socket = null;   //该socket需要写成静态参数供多条线程同时调用
 	private final String TAG = "Socket Service";
 	public volatile static BufferedReader in;
 	public volatile static BufferedWriter out;
+	private String result = "";
 	
 	protected volatile static boolean isConnect = false;
 	@Override
@@ -59,18 +60,22 @@ public class Socket_Service extends Service {
 			Log.v(TAG, "socket connect start!");
 			socket.connect(mSocketAddress,10000);
 			Log.v(TAG, "socket connect success!");
-			isConnect = true;
 			
-			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),"GBK"));
 		    new Thread(){
 		    	
 		    	public void run() {
 		    		try {
 		    			Log.v("test","thread_start");
 		    			
-		    			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		    			while(!(MainActivity.result = Socket_Service.in.readLine()).equals("1")){
-		    				Log.v("test",MainActivity.result);
+		    			in = new BufferedReader(new InputStreamReader(socket.getInputStream(),"GBK"));
+		    			while((result = Socket_Service.in.readLine())!=null){
+		    				if(result.equals("1")){
+		    					MainActivity.result = result;
+		    				}
+		    				if(result.equals("2")){
+		    					Register_UI.result = result;
+		    				}
 		    			}
 						
 					} catch (IOException e) {
@@ -81,10 +86,29 @@ public class Socket_Service extends Service {
 		    	};
 		    }.start();
 			Log.v(TAG, "instream and outstream is ready!");
+			isConnect = true;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
+	
+  @Override
+  	public void onDestroy() {
+	  
+	  super.onDestroy();
+	  try {
+		  in.close();
+		  out.close();
+		  socket.shutdownOutput();
+		  socket.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	  initSocket();
+	  
+	  
+  	}
 }

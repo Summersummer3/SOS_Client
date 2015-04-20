@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.gc.materialdesign.views.ButtonFlat;
 import com.tencent.android.tpush.XGPushManager;
 import com.tencent.android.tpush.service.XGPushService;
 
@@ -22,6 +23,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,36 +46,13 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	
 	private String user_name;
     private String pass_word;
-    public volatile static String result = "";
+    public volatile static String result = "0";
+    private boolean Logined;
+    private String PREFS_NAME = "com.example.layoutt";
+    SharedPreferences settings;
+    ButtonFlat bf;
     
-
-    
-    public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
-			  if(result.equals("1")){
-			  Intent intent = new Intent();
-			  intent.setClass(MainActivity.this, Main_UI.class);
-			  startActivity(intent);
-			  finish();  //finish the activity 
-			  
-//					  Bundle bd = new Bundle();
-//					  bd.putString("user_name", user_name);
-//					  bd.putString("pass_word", pass_word);
-//					  
-//					  intent.putExtras(bd);
-//					  startActivityForResult(intent,0);
-//					  MainActivity.this.in.close();
-//					  MainActivity.this.out.close();
-//					  MainActivity.this.socket.close();//后面一个参数是requestcode。
-			  }
-			else{
-			  MainActivity.this.ShowDialog("username or password wrong!");
-			}
-    }
-			
-		
-	
-    
-	protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -82,12 +61,29 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		Intent service = new Intent(context, XGPushService.class);
 		context.startService(service);
 		
-		Intent serviceIntent = new Intent();
-		serviceIntent.setClass(this, Socket_Service.class);
-		context.startService(serviceIntent);
+		if(Socket_Service.isConnect!=true){
 		
+			Intent serviceIntent = new Intent();
+			serviceIntent.setClass(this, Socket_Service.class);
+			context.startService(serviceIntent);
+		}
+		
+		settings = getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+		Logined = settings.getBoolean("Logined", false);
+//		第一次进入初始化
+	
+		if(Logined==false){
+			
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("Logined", true);
+			editor.putString("username", "");
+			editor.putString("password", "");
+			editor.commit();
+			
+		}
 		
 		bt = (Button) findViewById(R.id.button1);
+		bf = (ButtonFlat) findViewById(R.id.button_goRegister);
 		
 		et1 = (EditText) findViewById(R.id.editText1);
 		et2 = (EditText) findViewById(R.id.editText2);
@@ -100,7 +96,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		
         et1.requestFocus();
         
-		bt.setOnClickListener(new Button.OnClickListener() {
+        bt.setOnClickListener(new Button.OnClickListener() {
 			
 			
 			public void onClick(View arg0) {
@@ -120,33 +116,32 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		      }
 		      
 		      else{
-		    	    
-		    	    
-		    	  	JSONObject json = new JSONObject();
-		    	 
-					try {
-						
-						json.put("user_name", user_name);
-						json.put("pass_word", pass_word);
-						Socket_Service.out.write("0\n");
-						Socket_Service.out.flush();
-						Thread.sleep(1000);
-						Socket_Service.out.write(json.toString()+"\n");
-						Socket_Service.out.flush();
-						Thread.sleep(1000);
-						Log.v("test",result);
-						loginResult();
-						
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		    	  	settings = getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
+					SharedPreferences.Editor editor = settings.edit();
+					editor.putString("username", user_name);
+					editor.putString("password", pass_word);
+					editor.commit();
+					Log.v("get", "cun chu wan cheng!");
+		    	    login();
+		    	  
 				
 		      }
 		    
 			}
 		});
-
+        
+        bf.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, Register_UI.class);
+				startActivity(intent);
+				
+			}
+		});
+		
+        
 
 	}
 	
@@ -168,6 +163,25 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	
 		
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(!settings.getString("username", "").equals("")){
+			user_name = settings.getString("username", "");
+			pass_word = settings.getString("password", "");
+			et1.setText(user_name);
+			et2.setText(pass_word);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			login();
+			Log.v("Login", "begin!!");
+		}
+	}
 
 //	@Override
 //	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -184,7 +198,53 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 //		}
 //	}
 
+	   private void login() {
+			JSONObject json = new JSONObject();
+	    	 
+			try {
+				
+				json.put("user_name", user_name);
+				json.put("pass_word", pass_word);
+				Socket_Service.out.write("0\n");
+				Socket_Service.out.flush();
+				Thread.sleep(1000);
+				Socket_Service.out.write(json.toString()+"\n");
+				Socket_Service.out.flush();
+				Thread.sleep(1000);
+				Log.v("test",result);
+				loginResult();
+				
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 	
+	    
+	    public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
+				  if(result.equals("1")){
+				  Intent intent = new Intent();
+				  intent.setClass(MainActivity.this, Main_UI.class);
+				  intent.putExtra("username", user_name);
+				  startActivity(intent);
+				  finish();  //finish the activity 
+				  
+//						  Bundle bd = new Bundle();
+//						  bd.putString("user_name", user_name);
+//						  bd.putString("pass_word", pass_word);
+//						  
+//						  intent.putExtras(bd);
+//						  startActivityForResult(intent,0);
+//						  MainActivity.this.in.close();
+//						  MainActivity.this.out.close();
+//						  MainActivity.this.socket.close();//后面一个参数是requestcode。
+				  }
+				else{
+				  MainActivity.this.ShowDialog("Connection failed or username or password wrong!");
+				}
+	    }
+				
+	    
 	   public void ShowDialog(String msg) {
 	        new AlertDialog.Builder(this).setTitle("notification").setMessage(msg)
 	                .setPositiveButton("ok", new DialogInterface.OnClickListener() {

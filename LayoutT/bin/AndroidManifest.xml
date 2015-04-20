@@ -40,7 +40,9 @@
 	<!-- 【可选】 信鸽SDK所需权限 -->
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.BATTERY_STATS" />
-    
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />  
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
 
     <application
         android:allowBackup="true"
@@ -66,6 +68,15 @@
             <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
         </intent-filter>
     </receiver>
+    
+    <!--   实现开机启动连接服务器 -->
+    <receiver 
+        android:name="com.example.layoutt.BootBroadcastReceiver">  
+                <intent-filter>  
+                    <action android:name="android.intent.action.BOOT_COMPLETED"></action>  
+                    <category android:name="android.intent.category.LAUNCHER" />  
+                </intent-filter>  
+    </receiver>  
         
         <activity
             android:name="com.example.layoutt.MainActivity"
@@ -76,6 +87,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+         <activity
+            android:name="com.example.layoutt.Register_UI"
+            android:label="@string/app_name">
+             
+         </activity>
         
         <activity
             android:name="com.example.layoutt.Table1"
