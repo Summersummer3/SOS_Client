@@ -93,12 +93,14 @@
             android:label="@string/app_name">
              
          </activity>
-        
-        <activity
-            android:name="com.example.layoutt.Table1"
+         
+         <activity
+            android:name="com.example.layoutt.Register_UI_2"
             android:label="@string/app_name">
-            
-        </activity>
+             
+         </activity>
+        
+    
         
         <activity
             android:name="com.example.layoutt.Map_UI"

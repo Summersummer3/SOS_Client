@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">布局设置</string>
+    <string name="app_name">HELPME!</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 	<string name="login">登陆</string>

@@ -76,6 +76,9 @@ public class Socket_Service extends Service {
 		    				if(result.equals("2")){
 		    					Register_UI.result = result;
 		    				}
+		    				if(result.equals("11")||result.equals("12")||result.equals("13")||result.equals("3")){
+		    					Register_UI_2.result = result;
+		    				}
 		    			}
 						
 					} catch (IOException e) {

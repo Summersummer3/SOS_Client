@@ -1,10 +1,19 @@
 package com.example.layoutt;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLInput;
 import java.util.ArrayList;
 import java.util.List;
+
+
+
+
+
 
 
 
@@ -49,7 +58,7 @@ public class Register_UI extends Activity {
 	
 	public volatile static String result = "0";
 	
-	private File f = new File("/sdcard/weather/db_weather.db");
+	private File f;
 	
 	private List<String> proset=new ArrayList<String>();//省份集合
 	private List<String> citset=new ArrayList<String>();//城市集合
@@ -71,6 +80,8 @@ public class Register_UI extends Activity {
 		ed2 = (EditText) findViewById(R.id.editText_registerPassword);
 		ed3 = (EditText) findViewById(R.id.editText_registerCommitPassword);
 		ed4 = (EditText) findViewById(R.id.editText_registerPhoneNumber);
+		
+		f = getDBFile();
 		
 		sp1 = (Spinner) findViewById(R.id.spinner_registerProSelect);
 		ArrayAdapter<String> pro_adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,getProSet());
@@ -142,7 +153,46 @@ public class Register_UI extends Activity {
 		
 			
 	}
-
+	
+	@SuppressWarnings("finally")
+	private File getDBFile(){
+		File file = new File(getFilesDir(),"db_weather.db");
+		if(file.exists()){
+			return file;
+		}
+		else{
+			try {
+				InputStream is = getResources().getAssets().open("db_weather.db");
+				FileOutputStream fos = new FileOutputStream(file);
+				//输出流进行复制文件的方法！！！ 应记住
+				
+				byte[] bt = new byte[8192];
+				int len = -1;
+				while((len = is.read(bt)) != -1){
+				    fos.write(bt, 0, len);
+				}
+				
+				is.close();
+				fos.close();
+				return file;
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				return file;
+			}
+			
+			
+			
+		}
+		
+		
+		
+	}
+	
 	private SpinnerAdapter getCityAdapter() {
 		ArrayAdapter<String> city_adapter = new ArrayAdapter<String>
 		(this, android.R.layout.simple_spinner_item,getCitySet(pro_id));
@@ -216,13 +266,13 @@ public class Register_UI extends Activity {
 			   editor.commit();
 			  
 			   new AlertDialog.Builder(this).setTitle("注册成功")//
-			   				  .setMessage("恭喜您，注册成功，请重新登录")
+			   				  .setMessage("恭喜您，注册成功,请完善您的求救人账号名单！")
 			   				  .setPositiveButton("ok",new DialogInterface.OnClickListener() {
 								
 								@Override
 								public void onClick(DialogInterface arg0, int arg1) {
 									Intent intent = new Intent();
-									intent.setClass(Register_UI.this, MainActivity.class);
+									intent.setClass(Register_UI.this, Register_UI_2.class);
 									startActivity(intent);
 									finish();
 								}

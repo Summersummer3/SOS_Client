@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.gc.materialdesign.views.ButtonFlat;
+import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushManager;
 import com.tencent.android.tpush.service.XGPushService;
 
@@ -56,16 +57,13 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Context context =  getApplicationContext();
-		XGPushManager.registerPush(context);
-		Intent service = new Intent(context, XGPushService.class);
-		context.startService(service);
+		
 		
 		if(Socket_Service.isConnect!=true){
 		
 			Intent serviceIntent = new Intent();
 			serviceIntent.setClass(this, Socket_Service.class);
-			context.startService(serviceIntent);
+			startService(serviceIntent);
 		}
 		
 		settings = getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
@@ -220,14 +218,32 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			}
 	}
 	
-	    
-	    public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
-				  if(result.equals("1")){
-				  Intent intent = new Intent();
-				  intent.setClass(MainActivity.this, Main_UI.class);
-				  intent.putExtra("username", user_name);
-				  startActivity(intent);
-				  finish();  //finish the activity 
+	   public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
+			if(result.equals("1")){
+				//绑定推送账号
+				Context context =  getApplicationContext();
+				XGPushManager.registerPush(context,user_name,new XGIOperateCallback() {
+					
+					@Override
+					public void onSuccess(Object data, int flag) {
+						Log.v("TPush", "注册成功，设备token为：" + data);
+						
+					}
+					
+					@Override
+					public void onFail(Object data, int errCode, String msg) {
+						Log.d("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+					}
+				});
+				
+				Intent service = new Intent(context, XGPushService.class);
+				startService(service);
+				
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, Main_UI.class);
+				intent.putExtra("username", user_name);
+				startActivity(intent);
+				finish();  //finish the activity 
 				  
 //						  Bundle bd = new Bundle();
 //						  bd.putString("user_name", user_name);
