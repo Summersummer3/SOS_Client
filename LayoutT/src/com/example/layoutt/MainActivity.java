@@ -47,7 +47,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	
 	private String user_name;
     private String pass_word;
-    public volatile static String result = "0";
+    public volatile static String result = "00";
     private boolean Logined;
     private String PREFS_NAME = "com.example.layoutt";
     SharedPreferences settings;
@@ -64,6 +64,12 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			Intent serviceIntent = new Intent();
 			serviceIntent.setClass(this, Socket_Service.class);
 			startService(serviceIntent);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		settings = getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
@@ -119,7 +125,11 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 					editor.putString("username", user_name);
 					editor.putString("password", pass_word);
 					editor.commit();
-					Log.v("get", "cun chu wan cheng!");
+					
+					if(Socket_Service.isConnect == false){
+						ShowDialog("网络连接出错，请检查网络，稍后再试");
+					}
+					
 		    	    login();
 		    	  
 				
@@ -218,6 +228,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			}
 	}
 	
+	   
 	   public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
 			if(result.equals("1")){
 				//绑定推送账号
@@ -256,7 +267,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 //						  MainActivity.this.socket.close();//后面一个参数是requestcode。
 				  }
 				else{
-				  MainActivity.this.ShowDialog("Connection failed or username or password wrong!");
+				  MainActivity.this.ShowDialog("账号或密码错误，请重新输入！");
 				}
 	    }
 				

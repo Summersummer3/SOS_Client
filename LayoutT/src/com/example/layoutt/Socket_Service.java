@@ -88,13 +88,17 @@ public class Socket_Service extends Service {
 		    		
 		    	};
 		    }.start();
+		    
 			Log.v(TAG, "instream and outstream is ready!");
 			isConnect = true;
+			
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			isConnect = false;
+			Log.v("error", "Á¬½Ó¶Ï¿ª...");
+			initSocket();
 			e.printStackTrace();
 		}
-		
 	}
 	
   @Override

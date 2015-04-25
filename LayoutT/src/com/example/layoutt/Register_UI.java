@@ -56,7 +56,7 @@ public class Register_UI extends Activity {
 	private String teleNumber;
 	private String PREFS_NAME = "com.example.layoutt";
 	
-	public volatile static String result = "0";
+	public volatile static String result = "00";
 	
 	private File f;
 	

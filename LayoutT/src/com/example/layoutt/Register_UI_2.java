@@ -21,7 +21,7 @@ public class Register_UI_2 extends Activity {
 	private ButtonFlat bf;
 	private String helpUserName1,helpUserName2,helpUserName3;
 	
-	public volatile static String result = "0";
+	public volatile static String result = "00";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +44,6 @@ public class Register_UI_2 extends Activity {
 				helpUserName1 = et1.getText().toString();
 				helpUserName2 = et2.getText().toString();
 				helpUserName3 = et3.getText().toString();
-				if(helpUserName1.equals("")){
-					helpUserName1 = "null";
-				}
-				if(helpUserName2.equals("")){
-					helpUserName2 = "null";
-				}
-				if(helpUserName3.equals("")){
-					helpUserName3 = "null";
-				}
 				
 				helpListRegister();
 			}
