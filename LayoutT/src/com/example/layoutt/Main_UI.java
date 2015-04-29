@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,7 +30,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Main_UI extends Activity implements LocationListener{
+public class Main_UI extends Activity{
 	
 	
 	private ImageButton ib1,ib2,ib3;
@@ -36,7 +38,8 @@ public class Main_UI extends Activity implements LocationListener{
 	private TextView tv;
 	private LocationManager mLocationManager;
 	private Location location;
-	private JSONObject loc;
+	public volatile static JSONObject loc;
+	private boolean LocationServiceOn = false;
 	private String PREFS_NAME = "com.example.layoutt";
 	private String username,tel;
 	
@@ -87,14 +90,17 @@ public class Main_UI extends Activity implements LocationListener{
 			
 			@Override
 			public void onClick(View arg0) {
-				Log.i("gps", "点击按钮");
+				
+				
+				
 				if(loc==null){
-					Dialog dialog = new Dialog(Main_UI.this, "定位出错！", "定位尚未成功 ,请稍等！");
+					Dialog dialog = new Dialog(Main_UI.this, "定位出错！", "定位未启动或者正在等待定位中，请稍后再试");
 					dialog.show();
 					dialog.getButtonAccept().setText("等待定位");
 					dialog.getButtonCancel().setText("");
 					
 				}
+				
 				else{
 					try {
 						Socket_Service.out.write("1\n");
@@ -141,71 +147,43 @@ public class Main_UI extends Activity implements LocationListener{
 			}
 		});
 		
-		mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		loc = changeLoc(location);
-		
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
-		
-		Log.v("Error","here!!");		
-		
+
 		
 	}
+
+
 	@Override
-	protected void onResume() {
-		super.onResume();
-		while(loc==null)
-		{
-			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 5, this);
-		}
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
 	}
-	
+
 	@Override
-	protected void onPause() {
-		super.onPause();
-		mLocationManager.removeUpdates(this);
-	}
-	
-	private JSONObject changeLoc(Location location) {
-		JSONObject json = new JSONObject();
-		if(location!=null){
-			try {
-				json.put("Latitude", location.getLatitude());
-				json.put("Longitude", location.getLongitude());
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		Intent service = new Intent();
+		service.setClass(this,Location_Service.class);
+		
+		switch(item.getItemId()){
+		case R.id.id_location_on:
+			if(LocationServiceOn==false){
+				LocationServiceOn = true;
+				startService(service);
+				item.setTitle("定位已启动");
+				break;
+			}else{
+				
+				LocationServiceOn = false;
+				stopService(service);
+				item.setTitle("启动定位");
+				break;
 			}
 			
-			return json;
 		}
-		else{
-			return null;
-		}
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		loc = changeLoc(location);
-		Log.i("gps", "更新位置");
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-		loc = changeLoc(null);
-		Log.i("gps", "结束");
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-		loc = changeLoc(mLocationManager.getLastKnownLocation(provider));
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 		
+		return super.onOptionsItemSelected(item);
 	}
-	
+
 
    
 }

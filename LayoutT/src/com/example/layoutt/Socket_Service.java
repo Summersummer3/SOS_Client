@@ -9,17 +9,24 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushManager;
+import com.tencent.android.tpush.service.XGPushService;
+
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.util.Log;
 
 public class Socket_Service extends Service {
 
 	private final int PORT = 8000;
-	private final String IP = "192.168.1.106";
+	private final String IP = "192.168.23.1";
 	volatile static Socket socket = null;   //该socket需要写成静态参数供多条线程同时调用
 	private final String TAG = "Socket Service";
+	private String PREFS_NAME = "com.example.layoutt";
 	public volatile static BufferedReader in;
 	public volatile static BufferedWriter out;
 	private String result = "";
@@ -34,13 +41,34 @@ public class Socket_Service extends Service {
 	public void onStart(Intent intent, int startId) {
 		Log.v(TAG, "service starts");
 		new Thread(){
-			private String result;
+			
 
 			@Override
 			public void run() {
 				if(isConnect==false){
 					
 					initSocket();
+					
+					SharedPreferences setting = getSharedPreferences(PREFS_NAME, 0);
+					String user_name = setting.getString("username", "");
+					//绑定推送账号
+					Context context =  getApplicationContext();
+					XGPushManager.registerPush(context,user_name,new XGIOperateCallback() {
+						
+						@Override
+						public void onSuccess(Object data, int flag) {
+							Log.v("TPush", "注册成功，设备token为：" + data);
+							
+						}
+						
+						@Override
+						public void onFail(Object data, int errCode, String msg) {
+							Log.d("TPush", "注册失败，错误码：" + errCode + ",错误信息：" + msg);
+						}
+					});
+					
+					Intent service = new Intent(context, XGPushService.class);
+					startService(service);
 				
 					}
 			 }
@@ -96,7 +124,7 @@ public class Socket_Service extends Service {
 		} catch (IOException e) {
 			isConnect = false;
 			Log.v("error", "连接断开...");
-			initSocket();
+			
 			e.printStackTrace();
 		}
 	}
@@ -110,6 +138,8 @@ public class Socket_Service extends Service {
 		  out.close();
 		  socket.shutdownOutput();
 		  socket.close();
+		  Log.v("destroy", "here!");
+		  
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
