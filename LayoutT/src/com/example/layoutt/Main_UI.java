@@ -140,10 +140,12 @@ public class Main_UI extends Activity{
 					e.printStackTrace();
 				}
 				
+				
 				Intent intent =new Intent();
 				intent.setClass(Main_UI.this, MainActivity.class);
 				startActivity(intent);
 				
+				finish();
 			}
 		});
 		

@@ -23,7 +23,7 @@ import android.util.Log;
 public class Socket_Service extends Service {
 
 	private final int PORT = 8000;
-	private final String IP = "192.168.23.1";
+	private final String IP = "192.168.1.100";
 	volatile static Socket socket = null;   //该socket需要写成静态参数供多条线程同时调用
 	private final String TAG = "Socket Service";
 	private String PREFS_NAME = "com.example.layoutt";
@@ -98,7 +98,7 @@ public class Socket_Service extends Service {
 		    			
 		    			in = new BufferedReader(new InputStreamReader(socket.getInputStream(),"GBK"));
 		    			while((result = Socket_Service.in.readLine())!=null){
-		    				if(result.equals("1")){
+		    				if(result.equals("01")||result.equals("11")){
 		    					MainActivity.result = result;
 		    				}
 		    				if(result.equals("2")){
@@ -121,8 +121,17 @@ public class Socket_Service extends Service {
 			isConnect = true;
 			
 			
-		} catch (IOException e) {
+		} catch (Exception e) {
+			
+			
 			isConnect = false;
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			Log.v("error", "连接断开...");
 			
 			e.printStackTrace();

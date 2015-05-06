@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.gc.materialdesign.views.ButtonFlat;
+import com.gc.materialdesign.views.ProgressBarCircularIndetermininate;
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushManager;
 import com.tencent.android.tpush.service.XGPushService;
@@ -25,6 +26,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,19 +38,21 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.os.Build;
 
 public class MainActivity extends Activity implements OnFocusChangeListener{
 
 	
-	private Button bt;
+	private ButtonFlat bt;
 	private EditText et1,et2;
-	
+	private ProgressBar mProgressBar;
 	private String user_name;
     private String pass_word;
     public volatile static String result = "00";
     private boolean Logined;
+    private Boolean loginResult;
     private String PREFS_NAME = "com.example.layoutt";
     SharedPreferences settings;
     ButtonFlat bf;
@@ -74,6 +78,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 		
 		settings = getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
 		Logined = settings.getBoolean("Logined", false);
+		
 //		第一次进入初始化
 	
 		if(Logined==false){
@@ -86,8 +91,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			
 		}
 		
-		bt = (Button) findViewById(R.id.button1);
+		bt = (ButtonFlat) findViewById(R.id.button1);
 		bf = (ButtonFlat) findViewById(R.id.button_goRegister);
+		
+		mProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
 		
 		et1 = (EditText) findViewById(R.id.editText1);
 		et2 = (EditText) findViewById(R.id.editText2);
@@ -104,6 +111,9 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			
 			
 			public void onClick(View arg0) {
+				
+			  
+			  
 			  user_name = et1.getText().toString();
 		      pass_word = et2.getText().toString();
 		      
@@ -180,13 +190,8 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 			pass_word = settings.getString("password", "");
 			et1.setText(user_name);
 			et2.setText(pass_word);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			login();
+			
+			new MyASyncTaskAutoLogin().execute();
 			Log.v("Login", "begin!!");
 		}
 	}
@@ -207,7 +212,9 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 //	}
 
 	   private void login() {
-			JSONObject json = new JSONObject();
+		   bt.setVisibility(View.GONE);
+		   
+		   JSONObject json = new JSONObject();
 	    	 
 			try {
 				
@@ -218,9 +225,10 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 				Thread.sleep(1000);
 				Socket_Service.out.write(json.toString()+"\n");
 				Socket_Service.out.flush();
-				Thread.sleep(1000);
-				Log.v("test",result);
-				loginResult();
+				
+				new MyASyncTaskLogin().execute();
+				
+				
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -230,7 +238,7 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 	
 	   
 	   public void loginResult() {                    //判断中新起一个线程将会使得UI线程崩溃
-			if(result.equals("1")){
+			if(loginResult){
 				//绑定推送账号
 				Context context =  getApplicationContext();
 				XGPushManager.registerPush(context,user_name,new XGIOperateCallback() {
@@ -278,14 +286,102 @@ public class MainActivity extends Activity implements OnFocusChangeListener{
 
 	                    @Override
 	                    public void onClick(DialogInterface dialog, int which) {
+	                    	
+	                    	bt.setVisibility(View.VISIBLE);
+	                    	mProgressBar.setVisibility(View.GONE);
+	                    	
 							dialog.cancel();
 							et1.requestFocus();
 	                    }
 	                }).show();
 	    }
 
+	   
+	   //  AsyncTask实现耗时异步操作
+	   
+	   class MyASyncTaskLogin extends AsyncTask<Void, Void, Boolean>{
 
+		@Override
+		protected void onPreExecute() {
+			
+			super.onPreExecute();
+			mProgressBar.setVisibility(View.VISIBLE);
+			Log.v("progressBar", "here!");
+		}
 
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			
+			while(result.equals("00")){
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			if(result.equals("11")){
+				result = "00";
+				return true;
+			}
+			else{
+				result = "00";
+				return false;
+				
+			}
+			
+			
+		}
+		   
+		   @Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			loginResult = result;
+			loginResult();
+		}
+	   }
+	   
+	   
+	   class MyASyncTaskAutoLogin extends AsyncTask<Void, Void, Boolean>{
+
+		@Override
+		protected Boolean doInBackground(Void... arg0) {
+			int count = 0;
+			while(Socket_Service.isConnect==false){
+				
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				count++;
+				if(count>20){
+					
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		   
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			if(result){
+				
+				login();
+			}
+			else{
+				
+				ShowDialog("网络连接出错");
+			}
+		}
+		   
+	   }
 
 //	@Override
 //	protected void onDestroy() {

@@ -65,14 +65,24 @@
         <requestFocus />
     </EditText>
 
-    <Button
+    <com.gc.materialdesign.views.ButtonFlat
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/editText2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="@string/login" />
+        android:text="@string/login"
+        
+        >
+	
+       
+         
+    </com.gc.materialdesign.views.ButtonFlat>
+    
+   
+ 
+    
 
     <com.gc.materialdesign.views.ButtonFlat
         android:id="@+id/button_goRegister"
@@ -82,5 +92,14 @@
         android:layout_centerHorizontal="true"
         android:text="注册" 
         />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/imageView1"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/editText2" 
+        android:visibility="gone"/>
 
 </RelativeLayout>
