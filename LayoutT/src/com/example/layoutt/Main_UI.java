@@ -33,7 +33,7 @@ import android.widget.Toast;
 public class Main_UI extends Activity{
 	
 	
-	private ImageButton ib1,ib2,ib3;
+	public static ImageButton ib1,ib2,ib3;
 	private ButtonFlat bf1;
 	private TextView tv;
 	private LocationManager mLocationManager;
@@ -41,7 +41,8 @@ public class Main_UI extends Activity{
 	public volatile static JSONObject loc;
 	private boolean LocationServiceOn = false;
 	private String PREFS_NAME = "com.example.layoutt";
-	private String username,tel;
+	private String username;
+	private static String tel;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +187,9 @@ public class Main_UI extends Activity{
 		return super.onOptionsItemSelected(item);
 	}
 
-
+	public static String getTel(){     //用于app widgeT获取预设求救号码
+		
+		return tel;
+	}
    
 }

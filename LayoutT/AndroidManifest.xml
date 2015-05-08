@@ -99,6 +99,27 @@
                     <category android:name="android.intent.category.LAUNCHER" />  
                 </intent-filter>  
     </receiver>  
+    
+    <receiver 
+        android:name=".MyAppWidgetProvider">
+            <intent-filter>   
+                <!-- widget默认的事件action -->   
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"></action>   
+                
+                <action android:name="Call110"/>
+                <action android:name="Call119"/>
+                <action android:name="Call120"/>
+                <action android:name="CallUser"/>
+                <action android:name="Location"/>
+                
+            </intent-filter>   
+            <!-- widget元数据,name是写死的，resource指的是widget的配置文件 -->   
+            <meta-data 
+                android:name="android.appwidget.provider" 
+                android:resource="@xml/appwidget_info">
+            </meta-data>
+           
+      </receiver>
         
         <activity
             android:name="com.example.layoutt.MainActivity"

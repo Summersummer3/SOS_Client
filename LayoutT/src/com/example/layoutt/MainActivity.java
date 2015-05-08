@@ -45,7 +45,7 @@ import android.os.Build;
 public class MainActivity extends Activity implements OnFocusChangeListener{
 
 	
-	private ButtonFlat bt;
+	public static ButtonFlat bt;
 	private EditText et1,et2;
 	private ProgressBar mProgressBar;
 	private String user_name;
