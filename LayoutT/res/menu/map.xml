@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+        <item
+        android:id="@+id/id_getLocation"
+        android:showAsAction="never"
+        android:title="获取求救具体地址"
+        />
+    
+        <item
+        android:id="@+id/id_getLocationHistory"
+        android:showAsAction="never"
+        android:title="获取该用户最近的求救信息"
+        />
+    
+    
+
+</menu>

@@ -8,6 +8,11 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.Collection;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.tencent.android.tpush.XGIOperateCallback;
 import com.tencent.android.tpush.XGPushManager;
@@ -23,13 +28,14 @@ import android.util.Log;
 public class Socket_Service extends Service {
 
 	private final int PORT = 8000;
-	private final String IP = "192.168.1.100";
+	private final String IP = "192.168.1.105";
 	volatile static Socket socket = null;   //该socket需要写成静态参数供多条线程同时调用
 	private final String TAG = "Socket Service";
 	private String PREFS_NAME = "com.example.layoutt";
 	public volatile static BufferedReader in;
 	public volatile static BufferedWriter out;
 	private String result = "";
+	public static boolean locGet = false;
 	
 	protected volatile static boolean isConnect = false;
 	@Override
@@ -96,6 +102,8 @@ public class Socket_Service extends Service {
 		    		try {
 		    			Log.v("test","thread_start");
 		    			
+		    			Location loc = null;
+		    			
 		    			in = new BufferedReader(new InputStreamReader(socket.getInputStream(),"GBK"));
 		    			while((result = Socket_Service.in.readLine())!=null){
 		    				if(result.equals("01")||result.equals("11")){
@@ -106,6 +114,24 @@ public class Socket_Service extends Service {
 		    				}
 		    				if(result.equals("11")||result.equals("12")||result.equals("13")||result.equals("3")){
 		    					Register_UI_2.result = result;
+		    				}
+		    				if(result.equals("locs")){
+		    					try {
+		    						Log.v("loc", "Histroy");
+									JSONArray json = new JSONArray(Socket_Service.in.readLine());
+									for(int i=0;i<json.length();i++){
+										Map_UI.locList.add(new Location(json.getJSONObject(i).getDouble("Latitude"),
+																		json.getJSONObject(i).getDouble("Longitude"),
+																		json.getJSONObject(i).getString("time")));
+									}
+									locGet = true;
+									Log.v("loc", "locGet is finish");
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		    				
+		    					
 		    				}
 		    			}
 						

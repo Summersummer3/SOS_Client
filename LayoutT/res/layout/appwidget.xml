@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:padding="@dimen/widget_margin">
+
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" 
+	    >
+
+	    <ImageButton
+	        android:id="@+id/imageButton_appwidget_3"
+	        android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignTop="@+id/imageButton_appwidget_1"
+	        android:background="@android:color/transparent"
+	        android:src="@drawable/doctor" 
+	        android:clickable="true"/>
+
+	    <ImageButton
+	        android:id="@+id/imageButton_appwidget_1"
+	        android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_marginTop="16dp"
+			android:background="@android:color/transparent"
+	        android:src="@drawable/police" 
+	        android:clickable="true"/>
+
+	    <ImageButton
+	        android:id="@+id/imageButton_appwidget_2"
+	        android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:layout_alignTop="@+id/imageButton_appwidget_1"
+	        android:layout_centerHorizontal="true"
+	        android:background="@android:color/transparent"
+	        android:src="@drawable/fireman" 
+	        android:clickable="true"/>
+
+	    <ImageButton
+	        android:id="@+id/imageButton_appwidget_5"
+	        android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:layout_alignRight="@+id/imageButton_appwidget_2"
+	        android:layout_below="@+id/imageButton_appwidget_1"
+	        android:layout_marginRight="46dp"
+	        android:background="@android:color/transparent"
+	        android:clickable="true"
+	        android:src="@drawable/maps" />
+
+	    <ImageButton
+	        android:id="@+id/imageButton_appwidget_4"
+	        android:layout_width="100dp"
+	        android:layout_height="100dp"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignTop="@+id/imageButton_appwidget_5"
+	        android:layout_marginRight="46dp"
+	        android:background="@android:color/transparent"
+	        android:clickable="true"
+	        android:src="@drawable/dialer" />
+
+	</RelativeLayout>
+
+</FrameLayout>
